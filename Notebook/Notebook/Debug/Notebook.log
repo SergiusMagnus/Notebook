@@ -1,3 +1,4 @@
 ﻿  Source.cpp
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(62): warning C4018: >: несоответствие типов со знаком и без знака
   Notebook.vcxproj -> C:\Users\Сергей\Documents\Visual Studio 2015\Projects\Notebook\Debug\Notebook.exe
   Notebook.vcxproj -> C:\Users\Сергей\Documents\Visual Studio 2015\Projects\Notebook\Debug\Notebook.pdb (Partial PDB)
