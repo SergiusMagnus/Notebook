@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <cmath>
 
 using namespace std;
 
@@ -95,16 +96,27 @@ void search();
 void destroy();
 void clear();
 
+const int originalSize = 10;
+
 int main() {
 	bool keepOn = true;
 	string command;
 
+	cout << "Data recording rules:" << endl;
+	cout << "    The input data must be written to the 'input.txt' file." << endl;
+	cout << "    The data must be written in the following order: first name, last name," << endl;
+	cout << "    patronymic, phone number, e-mail address, date of birth, city of residence." << endl;
+	cout << "    There must be a symbol ' ' between each cell. No other use of this symbol is allowed." << endl;
+	cout << "    Unknown cells must be replaced by a '-'. Information about each new character must begin with a new line." << endl;
+	cout << "    The maximum length of one cell is 50 characters. The minimum is 1." << endl;
+	cout << "    The result of the operation is written to the 'output.txt' file." << endl;
+
 	cout << "Commands:" << endl;
-	cout << "add - saves new contacts from file 'input.txt'." << endl << "    Warning! Data should be recorded in the following order: name, surname," << endl << "    patronymic, phone number, e-mail address, date of birth, city of residence." << endl << "    They should be separated by the symbol ' '. Other use of the ' ' symbol is not allowed." << endl << "    The data for each new person starts with a new line." << endl << "    In case certain data are unknown, they should be replaced with a '-' symbol." << endl;
-	cout << "search - looks for any matching records with the samples." << endl << "    The samples is written by all rules in the 'input.txt' file." << endl << "    The result is output to the 'output.txt' file." << endl;
-	cout << "delete - deletes all data matching the samples." << endl << "    The samples is written by all rules in the 'input.txt' file." << endl;
-	cout << "clear - erases all recorded data." << endl;
-	cout << "exit - gets out of the program." << endl << endl;
+	cout << "    add     -  saves new contacts from file 'input.txt'." << endl; 
+	cout << "    search  -  looks for any matching records with the samples." << endl; 
+	cout << "    delete  -  deletes all data matching the samples." << endl; 
+	cout << "    clear   -  erases all recorded data." << endl;
+	cout << "    exit    -  gets out of the program." << endl << endl;
 
 	while (keepOn) {
 		cout << "Enter a command: ";
@@ -145,6 +157,9 @@ void readInput(vector<Person> &inputData, int &lengthInputData) {
 	in.open("input.txt");
 
 	while (getline(in, currentLine)) {
+		if (lengthInputData == inputData.size()) {
+			inputData.resize(lengthInputData + ceil(lengthInputData / 2.0));
+		}
 		inputData[lengthInputData].conversion(currentLine);
 		lengthInputData++;
 	}
@@ -174,6 +189,9 @@ void readData(vector<Person> &data, int &lengthData) {
 	in.open("data.txt");
 	
 	while (getline(in, currentLine)) {
+		if (lengthData == data.size()) {
+			data.resize(lengthData + ceil(lengthData / 2.0));
+		}
 		data[lengthData].conversion(currentLine);
 		lengthData++;
 	}
@@ -207,6 +225,7 @@ bool checkInput() {
 	int indexLine;
 	int countLetter;
 	int countSpace;
+	int countLine = 0;
 	bool trigger = true;
 
 	in.open("input.txt");
@@ -221,7 +240,7 @@ bool checkInput() {
 			}
 			else {
 				countSpace++;
-				if (countLetter == 0) {
+				if ((countLetter == 0) || (countLetter > 50)) {
 					trigger = false;
 					break;
 				}
@@ -229,7 +248,11 @@ bool checkInput() {
 			}
 			indexLine++;
 		}
+		countLine++;
 		if (countSpace != inputDatum.getNumber() - 1) {
+			trigger = false;
+		}
+		if (countLine > 30000) {
 			trigger = false;
 		}
 		if (!trigger) {
@@ -244,7 +267,7 @@ bool checkInput() {
 
 void add() {
 	if (checkInput()) {
-		vector<Person> inputData(10);
+		vector<Person> inputData(originalSize);
 		int lengthInputData;
 
 		readInput(inputData, lengthInputData);
@@ -260,11 +283,11 @@ void add() {
 
 void search() {
 	if (checkInput()) {
-		vector<Person> inputData(10);
+		vector<Person> inputData(originalSize);
 		int lengthInputData;
-		vector<Person> data(10);
+		vector<Person> data(originalSize);
 		int lengthData;
-		vector<Person> newData(10);
+		vector<Person> newData(originalSize);
 		int newLengthData = 0;
 
 		readInput(inputData, lengthInputData);
@@ -273,6 +296,9 @@ void search() {
 		for (int i = 0; i < lengthData; i++) {
 			for (int j = 0; j < lengthInputData; j++) {
 				if (data[i].compare(inputData[j])) {
+					if (newLengthData == newData.size()) {
+						newData.resize(newLengthData + ceil(newLengthData / 2.0));
+					}
 					newData[newLengthData] = data[i];
 					newLengthData++;
 				}
@@ -290,22 +316,30 @@ void search() {
 
 void destroy() {
 	if (checkInput()) {
-		vector<Person> inputData(10);
+		bool trigger;
+		vector<Person> inputData(originalSize);
 		int lengthInputData;
-		vector<Person> data(10);
+		vector<Person> data(originalSize);
 		int lengthData;
-		vector<Person> newData(10);
+		vector<Person> newData(originalSize);
 		int newLengthData = 0;
 
 		readInput(inputData, lengthInputData);
 		readData(data, lengthData);
 
 		for (int i = 0; i < lengthData; i++) {
+			trigger = true;
 			for (int j = 0; j < lengthInputData; j++) {
-				if (!(data[i].compare(inputData[j]))) {
-					newData[newLengthData] = data[i];
-					newLengthData++;
+				if (data[i].compare(inputData[j])) {
+					trigger = false;
 				}
+			}
+			if (trigger) {
+				if (newLengthData == newData.size()) {
+					newData.resize(newLengthData + ceil(newLengthData / 2.0));
+				}
+				newData[newLengthData] = data[i];
+				newLengthData++;
 			}
 		}
 
