@@ -1,7 +1,11 @@
 ﻿  Source.cpp
-c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(36): warning C4018: >: несоответствие типов со знаком и без знака
-c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(218): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(208): warning C4101: countLetter: неиспользованная локальная переменная
-c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(209): warning C4101: countSpace: неиспользованная локальная переменная
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(37): warning C4018: >: несоответствие типов со знаком и без знака
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(161): warning C4244: аргумент: преобразование "double" в "unsigned int", возможна потеря данных
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(193): warning C4244: аргумент: преобразование "double" в "unsigned int", возможна потеря данных
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(237): warning C4018: <: несоответствие типов со знаком и без знака
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(226): warning C4101: countLetter: неиспользованная локальная переменная
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(227): warning C4101: countSpace: неиспользованная локальная переменная
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(300): warning C4244: аргумент: преобразование "double" в "unsigned int", возможна потеря данных
+c:\users\сергей\documents\visual studio 2015\projects\notebook\notebook\source.cpp(339): warning C4244: аргумент: преобразование "double" в "unsigned int", возможна потеря данных
   Notebook.vcxproj -> C:\Users\Сергей\Documents\Visual Studio 2015\Projects\Notebook\Debug\Notebook.exe
   Notebook.vcxproj -> C:\Users\Сергей\Documents\Visual Studio 2015\Projects\Notebook\Debug\Notebook.pdb (Partial PDB)
