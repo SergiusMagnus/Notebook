@@ -7,47 +7,21 @@ using namespace std;
 
 class Person {
 private:
-	const int number = 7;
-	string name;
-	string surname;
-	string patronymic;
-	string phoneNumber;
-	string emailAddress;
-	string birthday;
-	string city;
+	static const int number = 7;
+	string data[number];
+	/*
+	0 - имя
+	1 - фамилия
+	2 - отчество
+	3 - номер телефона
+	4 - адрес элестронной почты
+	5 - дата рождения
+	6 - город проживания*/
 
 public:
 	Person() {
-		name = "-";
-		surname = "-";
-		patronymic = "-";
-		phoneNumber = "-";
-		emailAddress = "-";
-		birthday = "-";
-		city = "-";
-	}
-
-	void record(int currentNumber, string currentWord) {
-		if (currentNumber == 0) {
-			name = currentWord;
-		}
-		else if (currentNumber == 1) {
-			surname = currentWord;
-		}
-		else if (currentNumber == 2) {
-			patronymic = currentWord;
-		}
-		else if (currentNumber == 3) {
-			phoneNumber = currentWord;
-		}
-		else if (currentNumber == 4) {
-			emailAddress = currentWord;
-		}
-		else if (currentNumber == 5) {
-			birthday = currentWord;
-		}
-		else if (currentNumber == 6) {
-			city = currentWord;
+		for (int i = 0; i < number; i++) {
+			data[i] = "-";
 		}
 	}
 
@@ -59,148 +33,232 @@ public:
 			while (currentLine[j] != ' ') {
 				currentWord += currentLine[j];
 				j++;
-				if (j + 1 > currentLine.length()) {
+				if ((j + 1) > currentLine.length()) {
 					break;
 				}
 			}
-			record(i, currentWord);
+			data[i] = currentWord;
 			j++;
 		}
 	}
 
 	string compound() {
-		string currentLine;
-		currentLine = name + ' ' + surname + ' ' + patronymic + ' ' + phoneNumber + ' ' + emailAddress + ' ' + birthday + ' ' + city;
+		string currentLine = data[0];
+		for (int i = 1; i < number; i++) {
+			currentLine += " " + data[i];
+		}
 		return currentLine;
 	}
 
-	bool compare(Person sample) {
+	bool compare(const Person sample) {
 		bool trigger = true;
-		if (!((sample.name == name) || (name == "-") || (sample.name == "-"))) {
-			trigger = false;
+
+		for (int i = 0; i < number; i++) {
+			if (!((sample.data[i] == data[i]) || (sample.data[i] == "-") || (data[i] == "-"))) {
+				trigger = false;
+				break;
+			}
 		}
-		if (!((sample.surname == surname) || (surname == "-") || (sample.surname == "-"))) {
-			trigger = false;
+		return trigger;
+	}
+
+	Person& operator= (const Person &person) {
+		for (int i = 0; i < number; i++) {
+			data[i] = person.data[i];
 		}
-		if (!((sample.patronymic == patronymic) || (patronymic == "-") || (sample.patronymic == "-"))) {
-			trigger = false;
+
+		return *this;
+	}
+
+	void print() {
+		for (int i = 0; i < number; i++) {
+			cout << data[i] << " ";
 		}
-		if (!((sample.phoneNumber == phoneNumber) || (phoneNumber == "-") || (sample.phoneNumber == "-"))) {
-			trigger = false;
-		}
-		if (!((sample.emailAddress == emailAddress) || (emailAddress == "-") || (sample.emailAddress == "-"))) {
-			trigger = false;
-		}
-		if (!((sample.birthday == birthday) || (birthday == "-") || (sample.birthday == "-"))) {
-			trigger = false;
-		}
-		if (!((sample.city == city) || (city == "-") || (sample.city == "-"))) {
-			trigger = false;
-		}
-		if (trigger) {
-			return true;
-		}
-		else {
-			return false;
-		}
+		cout << endl;
 	}
 };
 
+void chooseCommand(const string command, bool &keepOn);
+
+void read(vector<Person> &dataList, int &length);
+void write(vector<Person> &dataList, const int &length);
+void readData(vector<Person> &data, int &length);
+void writeData(vector<Person> &data, const int &length, const bool trigger);
+
 void add();
 void search();
+void destroy();
+void clear();
 
 int main() {
 	bool keepOn = true;
 	string command;
 
 	cout << "Commands:" << endl;
-	cout << "add - write new contacts from file add.txt." << endl << "    Warning! Data should be recorded in the following order: name, surname," << endl << "    patronymic, phone number, e-mail address, date of birth, city of residence." << endl << "    They should be separated by the symbol ' '. Other use of the ' ' symbol is not allowed." << endl << "    The data for each new person starts with a new line." << endl << "    In case certain data are unknown, they should be replaced with a '-' symbol." << endl;
-	cout << "search - to look for any matching records with the sample." << endl << "    The sample is written by all rules into the 'data to search.txt' file." << endl << "    The result is output to the 'search results.txt' file." << endl;
-	cout << "exit - get out of the program." << endl << endl;
+	cout << "add - saves new contacts from file 'input.txt'." << endl << "    Warning! Data should be recorded in the following order: name, surname," << endl << "    patronymic, phone number, e-mail address, date of birth, city of residence." << endl << "    They should be separated by the symbol ' '. Other use of the ' ' symbol is not allowed." << endl << "    The data for each new person starts with a new line." << endl << "    In case certain data are unknown, they should be replaced with a '-' symbol." << endl;
+	cout << "search - looks for any matching records with the samples." << endl << "    The samples is written by all rules in the 'input.txt' file." << endl << "    The result is output to the 'output.txt' file." << endl;
+	cout << "delete - deletes all data matching the samples." << endl << "    The samples is written by all rules in the 'input.txt' file." << endl;
+	cout << "clear - erases all recorded data." << endl;
+	cout << "exit - gets out of the program." << endl << endl;
 
 	while (keepOn) {
 		cout << "Enter a command: ";
 		cin >> command;
 
-		if (command == "add") {
-			add();
-		}
-		else if (command == "search") {
-			search();
-		}
-		else if (command == "exit") {
-			keepOn = false;
-		}
-		else {
-			cout << "The command entered does not exist." << endl << endl;
-		}
+		chooseCommand(command, keepOn);
 	}
 
 	return 0;
 }
 
-void add() {
-	int number;
+void chooseCommand(const string command, bool &keepOn) {
+	if (command == "add") {
+		add();
+	}
+	else if (command == "search") {
+		search();
+	}
+	else if (command == "delete") {
+		destroy();
+	}
+	else if (command == "clear") {
+		clear();
+	}
+	else if (command == "exit") {
+		keepOn = false;
+	}
+	else {
+		cout << "The command entered does not exist." << endl << endl;
+	}
+}
+
+void read(vector<Person> &dataList, int &length) {
 	string currentLine;
 	ifstream in;
-	ofstream out;
+	length = 0;
 
-	in.open("add.txt");
-	vector<Person> dataList(10);
-	number = 0;
+	in.open("input.txt");
 
 	while (getline(in, currentLine)) {
-		dataList[number].conversion(currentLine);
-		number++;
+		dataList[length].conversion(currentLine);
+		length++;
 	}
 
 	in.close();
+}
 
-	out.open("data.txt", ios::app);
+void write(vector<Person> &dataList, const int &length) {
+	string currentLine;
+	ofstream out;
 
-	for (int i = 0; i < number; i++) {
+	out.open("output.txt");
+
+	for (int i = 0; i < length; i++) {
 		currentLine = dataList[i].compound();
 		out << currentLine << endl;
 	}
 
 	out.close();
+}
+
+void readData(vector<Person> &data, int &length) {
+	string currentLine;
+	ifstream in;
+	length = 0;
+
+	in.open("data.txt");
+	
+	while (getline(in, currentLine)) {
+		data[length].conversion(currentLine);
+		length++;
+	}
+
+	in.close();
+}
+
+void writeData(vector<Person> &data, const int &length, const bool trigger) {
+	string currentLine;
+	ofstream out;
+
+	if (trigger) {
+		out.open("data.txt", ios::app);
+	}
+	else {
+		out.open("data.txt");
+	}
+
+	for (int i = 0; i < length; i++) {
+		currentLine = data[i].compound();
+		out << currentLine << endl;
+	}
+
+	out.close();
+}
+
+void add() {
+	vector<Person> dataList(10);
+	int lengthData;
+
+	read(dataList, lengthData);
+
+	writeData(dataList, lengthData, true);
 
 	cout << "Completed!" << endl << endl;
 }
 
 void search() {
-	int number;
-	string currentLine;
-	ifstream in;
-	ofstream out;
-
-	in.open("data to search.txt");
 	vector<Person> dataList(10);
-	number = 0;
-	Person sample;
+	int lengthData;
+	vector<Person> data(10);
+	int length;
+	vector<Person> newData(10);
+	int newLength = 0;
 
-	getline(in, currentLine);
-	sample.conversion(currentLine);
+	read(dataList, lengthData);
+	readData(data, length);
 
-	in.close();
-
-	in.open("data.txt");
-
-	while (getline(in, currentLine)) {
-		dataList[number].conversion(currentLine);
-		number++;
-	}
-
-	in.close();
-
-	out.open("search results.txt");
-	for (int i = 0; i < number; i++) {
-		if (dataList[i].compare(sample)) {
-			currentLine = dataList[i].compound();
-			out << currentLine << endl;
+	for (int i = 0; i < length; i++) {
+		for (int j = 0; j < lengthData; j++) {
+			if (data[i].compare(dataList[j])) {
+				newData[newLength] = data[i];
+				newLength++;
+			}
 		}
 	}
 
+	write(newData, newLength);
+
+	cout << "Completed!" << endl << endl;
+}
+
+void destroy() {
+	vector<Person> dataList(10);
+	int lengthData;
+	vector<Person> data(10);
+	int length;
+	vector<Person> newData(10);
+	int newLength = 0;
+
+	read(dataList, lengthData);
+	readData(data, length);
+
+	for (int i = 0; i < length; i++) {
+		for (int j = 0; j < lengthData; j++) {
+			if (!(data[i].compare(dataList[j]))) {
+				newData[newLength] = data[i];
+				newLength++;
+			}
+		}
+	}
+
+	writeData(newData, newLength, false);
+
+	cout << "Completed!" << endl << endl;
+}
+
+void clear() {
+	ofstream out;
+	out.open("data.txt", ios::trunc);
 	out.close();
 
 	cout << "Completed!" << endl << endl;
