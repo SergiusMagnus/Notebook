@@ -10,13 +10,13 @@ private:
 	static const int number = 7;
 	string data[number];
 	/*
-	0 - имя
-	1 - фамилия
-	2 - отчество
-	3 - номер телефона
-	4 - адрес элестронной почты
-	5 - дата рождения
-	6 - город проживания*/
+	0 - имя(name)
+	1 - фамилия(surname)
+	2 - отчество(patronymic)
+	3 - номер телефона(phone number)
+	4 - адрес элестронной почты(e-male)
+	5 - дата рождения(date of birth)
+	6 - город проживания(city)*/
 
 public:
 	Person() {
@@ -76,14 +76,19 @@ public:
 		}
 		cout << endl;
 	}
+
+	int getNumber() {
+		return number;
+	}
 };
 
 void chooseCommand(const string command, bool &keepOn);
 
-void read(vector<Person> &dataList, int &length);
-void write(vector<Person> &dataList, const int &length);
+void readInput(vector<Person> &dataList, int &length);
+void writeOutput(vector<Person> &dataList, const int length);
 void readData(vector<Person> &data, int &length);
-void writeData(vector<Person> &data, const int &length, const bool trigger);
+void writeData(vector<Person> &data, const int length, const bool trigger);
+bool checkInput();
 
 void add();
 void search();
@@ -132,51 +137,51 @@ void chooseCommand(const string command, bool &keepOn) {
 	}
 }
 
-void read(vector<Person> &dataList, int &length) {
+void readInput(vector<Person> &inputData, int &lengthInputData) {
 	string currentLine;
 	ifstream in;
-	length = 0;
+	lengthInputData = 0;
 
 	in.open("input.txt");
 
 	while (getline(in, currentLine)) {
-		dataList[length].conversion(currentLine);
-		length++;
+		inputData[lengthInputData].conversion(currentLine);
+		lengthInputData++;
 	}
 
 	in.close();
 }
 
-void write(vector<Person> &dataList, const int &length) {
+void writeOutput(vector<Person> &outputData, const int lengthOutputData) {
 	string currentLine;
 	ofstream out;
 
 	out.open("output.txt");
 
-	for (int i = 0; i < length; i++) {
-		currentLine = dataList[i].compound();
+	for (int i = 0; i < lengthOutputData; i++) {
+		currentLine = outputData[i].compound();
 		out << currentLine << endl;
 	}
 
 	out.close();
 }
 
-void readData(vector<Person> &data, int &length) {
+void readData(vector<Person> &data, int &lengthData) {
 	string currentLine;
 	ifstream in;
-	length = 0;
+	lengthData = 0;
 
 	in.open("data.txt");
 	
 	while (getline(in, currentLine)) {
-		data[length].conversion(currentLine);
-		length++;
+		data[lengthData].conversion(currentLine);
+		lengthData++;
 	}
 
 	in.close();
 }
 
-void writeData(vector<Person> &data, const int &length, const bool trigger) {
+void writeData(vector<Person> &data, const int lengthData, const bool trigger) {
 	string currentLine;
 	ofstream out;
 
@@ -187,7 +192,7 @@ void writeData(vector<Person> &data, const int &length, const bool trigger) {
 		out.open("data.txt");
 	}
 
-	for (int i = 0; i < length; i++) {
+	for (int i = 0; i < lengthData; i++) {
 		currentLine = data[i].compound();
 		out << currentLine << endl;
 	}
@@ -195,65 +200,122 @@ void writeData(vector<Person> &data, const int &length, const bool trigger) {
 	out.close();
 }
 
+bool checkInput() {
+	string currentLine;
+	ifstream in;
+	Person inputDatum;
+	int indexLine;
+	int countLetter;
+	int countSpace;
+	bool trigger = true;
+
+	in.open("input.txt");
+
+	while (getline(in, currentLine)) {
+		indexLine = 0;
+		int countLetter = 0;
+		int countSpace = 0;
+		while (indexLine < currentLine.size()) {
+			if (currentLine[indexLine] != ' ') {
+				countLetter++;
+			}
+			else {
+				countSpace++;
+				if (countLetter == 0) {
+					trigger = false;
+					break;
+				}
+				countLetter = 0;
+			}
+			indexLine++;
+		}
+		if (countSpace != inputDatum.getNumber() - 1) {
+			trigger = false;
+		}
+		if (!trigger) {
+			break;
+		}
+	}
+
+	in.close();
+
+	return trigger;
+}
+
 void add() {
-	vector<Person> dataList(10);
-	int lengthData;
+	if (checkInput()) {
+		vector<Person> inputData(10);
+		int lengthInputData;
 
-	read(dataList, lengthData);
+		readInput(inputData, lengthInputData);
 
-	writeData(dataList, lengthData, true);
+		writeData(inputData, lengthInputData, true);
 
-	cout << "Completed!" << endl << endl;
+		cout << "Completed!" << endl << endl;
+	}
+	else {
+		cout << "The data was entered incorrectly." << endl << endl;
+	}
 }
 
 void search() {
-	vector<Person> dataList(10);
-	int lengthData;
-	vector<Person> data(10);
-	int length;
-	vector<Person> newData(10);
-	int newLength = 0;
+	if (checkInput()) {
+		vector<Person> inputData(10);
+		int lengthInputData;
+		vector<Person> data(10);
+		int lengthData;
+		vector<Person> newData(10);
+		int newLengthData = 0;
 
-	read(dataList, lengthData);
-	readData(data, length);
+		readInput(inputData, lengthInputData);
+		readData(data, lengthData);
 
-	for (int i = 0; i < length; i++) {
-		for (int j = 0; j < lengthData; j++) {
-			if (data[i].compare(dataList[j])) {
-				newData[newLength] = data[i];
-				newLength++;
+		for (int i = 0; i < lengthData; i++) {
+			for (int j = 0; j < lengthInputData; j++) {
+				if (data[i].compare(inputData[j])) {
+					newData[newLengthData] = data[i];
+					newLengthData++;
+				}
 			}
 		}
+
+		writeOutput(newData, newLengthData);
+
+		cout << "Completed!" << endl << endl;
 	}
-
-	write(newData, newLength);
-
-	cout << "Completed!" << endl << endl;
+	else {
+		cout << "The data was entered incorrectly." << endl << endl;
+	}
 }
 
 void destroy() {
-	vector<Person> dataList(10);
-	int lengthData;
-	vector<Person> data(10);
-	int length;
-	vector<Person> newData(10);
-	int newLength = 0;
+	if (checkInput()) {
+		vector<Person> inputData(10);
+		int lengthInputData;
+		vector<Person> data(10);
+		int lengthData;
+		vector<Person> newData(10);
+		int newLengthData = 0;
 
-	read(dataList, lengthData);
-	readData(data, length);
+		readInput(inputData, lengthInputData);
+		readData(data, lengthData);
 
-	for (int i = 0; i < length; i++) {
-		for (int j = 0; j < lengthData; j++) {
-			if (!(data[i].compare(dataList[j]))) {
-				newData[newLength] = data[i];
-				newLength++;
+		for (int i = 0; i < lengthData; i++) {
+			for (int j = 0; j < lengthInputData; j++) {
+				if (!(data[i].compare(inputData[j]))) {
+					newData[newLengthData] = data[i];
+					newLengthData++;
+				}
 			}
 		}
+
+		writeData(newData, newLengthData, false);
+
+		cout << "Completed!" << endl << endl;
 	}
-
-	writeData(newData, newLength, false);
-
-	cout << "Completed!" << endl << endl;
+	else {
+		cout << "The data was entered incorrectly." << endl << endl;
+	}
 }
 
 void clear() {
