@@ -55,7 +55,7 @@ public:
 		bool trigger = true;
 
 		for (int i = 0; i < number; i++) {
-			if (!((sample.data[i] == data[i]) || (sample.data[i] == "-") || (data[i] == "-"))) {
+			if (!((sample.data[i] == data[i]) || (sample.data[i] == "%"))) {
 				trigger = false;
 				break;
 			}
