@@ -11,13 +11,13 @@ private:
 	static const int number = 7;
 	string data[number];
 	/*
-	0 - имя(name)
-	1 - фамилия(surname)
-	2 - отчество(patronymic)
-	3 - номер телефона(phone number)
-	4 - адрес элестронной почты(e-male)
-	5 - дата рождения(date of birth)
-	6 - город проживания(city)*/
+	0 - РёРјСЏ(name)
+	1 - С„Р°РјРёР»РёСЏ(surname)
+	2 - РѕС‚С‡РµСЃС‚РІРѕ(patronymic)
+	3 - РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР°(phone number)
+	4 - Р°РґСЂРµСЃ СЌР»РµСЃС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹(e-male)
+	5 - РґР°С‚Р° СЂРѕР¶РґРµРЅРёСЏ(date of birth)
+	6 - РіРѕСЂРѕРґ РїСЂРѕР¶РёРІР°РЅРёСЏ(city)*/
 
 public:
 	Person() {
@@ -81,116 +81,97 @@ public:
 	int getNumber() {
 		return number;
 	}
+
+	string getValue(int index) {
+		return data[index];
+	}
 };
 
-void chooseCommand(const string command, bool &keepOn);
+void readData(string dataAddress, vector<Person> &data, int &lengthData);
+void writeData(string dataAddress, vector<Person> &data, int lengthData, bool flag);
+bool checkInput(string fileAddress);
+bool checkString(string String);
+void sortData(vector<Person> &data, int lengthData, string flag);
+int getIndex(string flag);
+bool compareString(string String1, string String2);
 
-void readInput(vector<Person> &dataList, int &length);
-void writeOutput(vector<Person> &dataList, const int length);
-void readData(vector<Person> &data, int &length);
-void writeData(vector<Person> &data, const int length, const bool trigger);
-bool checkInput();
-
-void add();
-void search();
-void destroy();
-void clear();
+void addString(string dataAddress, string stringToAdd);
+void addFile(string dataAddress, string fileToAdd);
+void searchString(string dataAddress, string stringToSearch, string outputFile, string outputOrder);
+void searchFile(string dataAddress, string fileToSearch, string outputFile, string outputOrder);
+void replaceString(string dataAddress, string stringToSearch, string newString);
+void replaceFile(string dataAddress, string fileToSearch, string newFile);
+void deleteString(string dataAddress, string stringToDelete);
+void deleteFile(string dataAddress, string fileToDelete);
 
 const int originalSize = 10;
 
-int main() {
-	bool keepOn = true;
-	string command;
+int main(int argc, char *argv[]) {
+	if (argc > 2) {
+		string dataAddress = argv[1];
+		string flag = argv[2];
 
-	cout << "Data recording rules:" << endl;
-	cout << "    The input data must be written to the 'input.txt' file." << endl;
-	cout << "    The data must be written in the following order: first name, last name," << endl;
-	cout << "    patronymic, phone number, e-mail address, date of birth, city of residence." << endl;
-	cout << "    There must be a symbol ' ' between each cell. No other use of this symbol is allowed." << endl;
-	cout << "    Unknown cells must be replaced by a '-'. Information about each new character must begin with a new line." << endl;
-	cout << "    The maximum length of one cell is 50 characters. The minimum is 1." << endl;
-	cout << "    The result of the operation is written to the 'output.txt' file." << endl;
+		if (flag == "0") {
+			string stringToAdd = argv[3];
 
-	cout << "Commands:" << endl;
-	cout << "    add     -  saves new contacts from file 'input.txt'." << endl; 
-	cout << "    search  -  looks for any matching records with the samples." << endl; 
-	cout << "    delete  -  deletes all data matching the samples." << endl; 
-	cout << "    clear   -  erases all recorded data." << endl;
-	cout << "    exit    -  gets out of the program." << endl << endl;
+			addString(dataAddress, stringToAdd);
+		}
+		else if (flag == "1") {
+			string fileToAdd = argv[3];
 
-	while (keepOn) {
-		cout << "Enter a command: ";
-		cin >> command;
+			addFile(dataAddress, fileToAdd);
+		}
+		else if (flag == "2") {
+			string stringToSearch = argv[3];
+			string outputFile = argv[4];
+			string outputOrder = argv[5];
 
-		chooseCommand(command, keepOn);
+			searchString(dataAddress, stringToSearch, outputFile, outputOrder);
+		}
+		else if (flag == "3") {
+			string fileToSearch = argv[3];
+			string outputFile = argv[4];
+			string outputOrder = argv[5];
+
+			searchFile(dataAddress, fileToSearch, outputFile, outputOrder);
+		}
+		else if (flag == "4") {
+			string stringToSearch = argv[3];
+			string newString = argv[4];
+
+			replaceString(dataAddress, stringToSearch, newString);
+		}
+		else if (flag == "5") {
+			string fileToSearch = argv[3];
+			string newFile = argv[4];
+
+			replaceFile(dataAddress, fileToSearch, newFile);
+		}
+		else if (flag == "6") {
+			string stringToDelete = argv[3];
+
+			deleteString(dataAddress, stringToDelete);
+		}
+		else if (flag == "7") {
+			string fileToDelete = argv[3];
+
+			deleteFile(dataAddress, fileToDelete);
+		}
 	}
-
+	//system("pause");
 	return 0;
 }
 
-void chooseCommand(const string command, bool &keepOn) {
-	if (command == "add") {
-		add();
-	}
-	else if (command == "search") {
-		search();
-	}
-	else if (command == "delete") {
-		destroy();
-	}
-	else if (command == "clear") {
-		clear();
-	}
-	else if (command == "exit") {
-		keepOn = false;
-	}
-	else {
-		cout << "The command entered does not exist." << endl << endl;
-	}
-}
-
-void readInput(vector<Person> &inputData, int &lengthInputData) {
-	string currentLine;
-	ifstream in;
-	lengthInputData = 0;
-
-	in.open("input.txt");
-
-	while (getline(in, currentLine)) {
-		if (lengthInputData == inputData.size()) {
-			inputData.resize(lengthInputData + ceil(lengthInputData / 2.0));
-		}
-		inputData[lengthInputData].conversion(currentLine);
-		lengthInputData++;
-	}
-
-	in.close();
-}
-
-void writeOutput(vector<Person> &outputData, const int lengthOutputData) {
-	string currentLine;
-	ofstream out;
-
-	out.open("output.txt");
-
-	for (int i = 0; i < lengthOutputData; i++) {
-		currentLine = outputData[i].compound();
-		out << currentLine << endl;
-	}
-
-	out.close();
-}
-
-void readData(vector<Person> &data, int &lengthData) {
+void readData(string dataAddress, vector<Person> &data, int &lengthData) {
 	string currentLine;
 	ifstream in;
 	lengthData = 0;
 
-	in.open("data.txt");
+	in.open(dataAddress);
 	
 	while (getline(in, currentLine)) {
 		if (lengthData == data.size()) {
-			data.resize(lengthData + ceil(lengthData / 2.0));
+			data.resize(lengthData * 2);
 		}
 		data[lengthData].conversion(currentLine);
 		lengthData++;
@@ -199,15 +180,15 @@ void readData(vector<Person> &data, int &lengthData) {
 	in.close();
 }
 
-void writeData(vector<Person> &data, const int lengthData, const bool trigger) {
+void writeData(string dataAddress, vector<Person> &data, int lengthData, bool flag) {
 	string currentLine;
 	ofstream out;
 
-	if (trigger) {
-		out.open("data.txt", ios::app);
+	if (flag) {
+		out.open(dataAddress, ios::app);
 	}
 	else {
-		out.open("data.txt");
+		out.open(dataAddress);
 	}
 
 	for (int i = 0; i < lengthData; i++) {
@@ -218,7 +199,7 @@ void writeData(vector<Person> &data, const int lengthData, const bool trigger) {
 	out.close();
 }
 
-bool checkInput() {
+bool checkInput(string fileAddress) {
 	string currentLine;
 	ifstream in;
 	Person inputDatum;
@@ -228,12 +209,12 @@ bool checkInput() {
 	int countLine = 0;
 	bool trigger = true;
 
-	in.open("input.txt");
+	in.open(fileAddress);
 
 	while (getline(in, currentLine)) {
 		indexLine = 0;
-		int countLetter = 0;
-		int countSpace = 0;
+		countLetter = 0;
+		countSpace = 0;
 		while (indexLine < currentLine.size()) {
 			if (currentLine[indexLine] != ' ') {
 				countLetter++;
@@ -265,14 +246,123 @@ bool checkInput() {
 	return trigger;
 }
 
-void add() {
-	if (checkInput()) {
-		vector<Person> inputData(originalSize);
-		int lengthInputData;
+bool checkString(string String) {
+	int indexLine;
+	int countLetter;
+	int countSpace;
+	Person inputDatum;
+	bool trigger = true;
 
-		readInput(inputData, lengthInputData);
+	indexLine = 0;
+	countLetter = 0;
+	countSpace = 0;
+	while (indexLine < String.size()) {
+		if (String[indexLine] != ' ') {
+			countLetter++;
+		}
+		else {
+			countSpace++;
+			if ((countLetter == 0) || (countLetter > 50)) {
+				trigger = false;
+				break;
+			}
+			countLetter = 0;
+		}
+		indexLine++;
+	}
+	if (countSpace != inputDatum.getNumber() - 1) {
+		trigger = false;
+	}
 
-		writeData(inputData, lengthInputData, true);
+	return trigger;
+}
+
+void sortData(vector<Person> &data, int lengthData, string flag) {
+	int index = getIndex(flag);
+	string String1;
+	string String2;
+	Person tmp;
+
+	//if (index != 5) {}
+		for (int i = 0; i < lengthData; i++) {
+			for (int j = 1; j < lengthData; j++) {
+
+				String1 = data[j - 1].getValue(index);
+				String2 = data[j].getValue(index);
+
+				if (!(compareString(String1, String2))) {
+					tmp = data[j - 1];
+					data[j - 1] = data[j];
+					data[j] = tmp;
+				}
+			}
+		}
+}
+
+int getIndex(string flag) {
+	int index;
+
+	if (flag == "0") {
+		index = 0;
+	}
+	else if (flag == "1") {
+		index = 1;
+	}
+	else if (flag == "2") {
+		index = 2;
+	}
+	else if (flag == "3") {
+		index = 3;
+	}
+	else if (flag == "4") {
+		index = 4;
+	}
+	else if (flag == "5") {
+		index = 5;
+	}
+	else if (flag == "6") {
+		index = 6;
+	}
+
+	return index;
+}
+
+bool compareString(string String1, string String2) {
+	bool trigger = true;
+
+	int lengthString1 = String1.size();
+	int lengthString2 = String2.size();
+	int minLength;
+
+	if (lengthString1 <= lengthString2) {
+		minLength = lengthString1;
+	}
+	else {
+		minLength = lengthString2;
+	}
+
+	for (int index = 0; index < minLength; index++) {
+		if (!(String1[index] <= String2[index])) {
+			trigger = false;
+			break;
+		}
+		if (String1[index] < String2[index]) {
+			break;
+		}
+	}
+
+	return trigger;
+}
+
+
+void addString(string dataAddress, string stringToAdd) {
+	if (checkString(stringToAdd)) {
+		vector<Person> inputData(1);
+		int lengthInputData = 1;
+
+		inputData[0].conversion(stringToAdd);
+
+		writeData(dataAddress, inputData, lengthInputData, true);
 
 		cout << "Completed!" << endl << endl;
 	}
@@ -281,31 +371,179 @@ void add() {
 	}
 }
 
-void search() {
-	if (checkInput()) {
+void addFile(string dataAddress, string fileToAdd) {
+	if (checkInput(fileToAdd)) {
 		vector<Person> inputData(originalSize);
 		int lengthInputData;
+
+		readData(fileToAdd, inputData, lengthInputData);
+
+		writeData(dataAddress, inputData, lengthInputData, true);
+
+		cout << "Completed!" << endl << endl;
+	}
+	else {
+		cout << "The data was entered incorrectly." << endl << endl;
+	}
+}
+
+void searchString(string dataAddress, string stringToSearch, string outputFile, string outputOrder) {
+	if (checkString(stringToSearch)) {
+		vector<Person> inputData(1);
+		int lengthInputData = 1;
+		vector<Person> data(originalSize);
+		int lengthData;
+		vector<Person> outputData(originalSize);
+		int outputLengthData = 0;
+
+		inputData[0].conversion(stringToSearch);
+		readData(dataAddress, data, lengthData);
+
+		for (int i = 0; i < lengthData; i++) {
+			if (data[i].compare(inputData[0])) {
+				if (outputLengthData == outputData.size()) {
+					outputData.resize(outputLengthData * 2);
+				}
+				outputData[outputLengthData] = data[i];
+				outputLengthData++;
+			}
+		}
+
+		sortData(outputData, outputLengthData, outputOrder);
+
+		writeData(outputFile, outputData, outputLengthData, false);
+
+		cout << "Completed!" << endl << endl;
+	}
+	else {
+		cout << "The data was entered incorrectly." << endl << endl;
+	}
+}
+
+void searchFile(string dataAddress, string fileToSearch, string outputFile, string outputOrder) {
+	if (checkInput(fileToSearch)) {
+		vector<Person> inputData(originalSize);
+		int lengthInputData;
+		vector<Person> data(originalSize);
+		int lengthData;
+		vector<Person> outputData(originalSize);
+		int outputLengthData = 0;
+
+		readData(fileToSearch, inputData, lengthInputData);
+		readData(dataAddress, data, lengthData);
+
+		for (int i = 0; i < lengthData; i++) {
+			for (int j = 0; j < lengthInputData; j++) {
+				if (data[i].compare(inputData[j])) {
+					if (outputLengthData == outputData.size()) {
+						outputData.resize(outputLengthData * 2);
+					}
+					outputData[outputLengthData] = data[i];
+					outputLengthData++;
+				}
+			}
+		}
+
+		sortData(outputData, outputLengthData, outputOrder);
+
+		writeData(outputFile, outputData, outputLengthData, false);
+
+		cout << "Completed!" << endl << endl;
+	}
+	else {
+		cout << "The data was entered incorrectly." << endl << endl;
+	}
+}
+
+void replaceString(string dataAddress, string stringToSearch, string newString) {
+	if ((checkString(stringToSearch)) && (checkString(newString))) {
+		vector<Person> dataToSearch(1);
+		int lengthInputData = 1;
+		vector<Person> data(originalSize);
+		int lengthData;
+		vector<Person> dataToReplace(1);
+		int outputLengthData = 1;
+
+		dataToSearch[0].conversion(stringToSearch);
+		dataToReplace[0].conversion(newString);
+		readData(dataAddress, data, lengthData);
+
+		for (int i = 0; i < lengthData; i++) {
+			if (data[i].compare(dataToSearch[0])) {
+				data[i] = dataToReplace[0];
+			}
+		}
+
+		writeData(dataAddress, data, lengthData, false);
+
+		cout << "Completed!" << endl << endl;
+	}
+	else {
+		cout << "The data was entered incorrectly." << endl << endl;
+	}
+}
+
+void replaceFile(string dataAddress, string fileToSearch, string newFile) {
+	if ((checkInput(fileToSearch)) && (checkInput(newFile))) {
+		vector<Person> dataToSearch(originalSize);
+		int lengthInputData;
+		vector<Person> data(originalSize);
+		int lengthData;
+		vector<Person> newData(originalSize);
+		int lengthNewData;
+		vector<Person> dataToReplace(originalSize);
+		int outputLengthData;
+
+		readData(fileToSearch, dataToSearch, lengthInputData);
+		readData(dataAddress, data, lengthData);
+		readData(dataAddress, newData, lengthNewData);
+		readData(newFile, dataToReplace, outputLengthData);
+
+		for (int i = 0; i < lengthData; i++) {
+			for (int j = 0; j < lengthInputData; j++) {
+				if (data[i].compare(dataToSearch[j])) {
+					newData[i] = dataToReplace[j];
+				}
+			}
+		}
+
+		writeData(dataAddress, newData, lengthNewData, false);
+
+		cout << "Completed!" << endl << endl;
+	}
+	else {
+		cout << "The data was entered incorrectly." << endl << endl;
+	}
+}
+
+void deleteString(string dataAddress, string stringToDelete) {
+	if (checkInput(stringToDelete)) {
+		bool trigger;
+		vector<Person> inputData(1);
+		int lengthInputData = 1;
 		vector<Person> data(originalSize);
 		int lengthData;
 		vector<Person> newData(originalSize);
 		int newLengthData = 0;
 
-		readInput(inputData, lengthInputData);
-		readData(data, lengthData);
+		inputData[0].conversion(stringToDelete);
+		readData(dataAddress, data, lengthData);
 
 		for (int i = 0; i < lengthData; i++) {
-			for (int j = 0; j < lengthInputData; j++) {
-				if (data[i].compare(inputData[j])) {
-					if (newLengthData == newData.size()) {
-						newData.resize(newLengthData + ceil(newLengthData / 2.0));
-					}
-					newData[newLengthData] = data[i];
-					newLengthData++;
+			trigger = true;
+			if (data[i].compare(inputData[0])) {
+				trigger = false;
+			}
+			if (trigger) {
+				if (newLengthData == newData.size()) {
+					newData.resize(newLengthData * 2);
 				}
+				newData[newLengthData] = data[i];
+				newLengthData++;
 			}
 		}
 
-		writeOutput(newData, newLengthData);
+		writeData(dataAddress, newData, newLengthData, false);
 
 		cout << "Completed!" << endl << endl;
 	}
@@ -314,8 +552,8 @@ void search() {
 	}
 }
 
-void destroy() {
-	if (checkInput()) {
+void deleteFile(string dataAddress, string fileToDelete) {
+	if (checkInput(fileToDelete)) {
 		bool trigger;
 		vector<Person> inputData(originalSize);
 		int lengthInputData;
@@ -324,8 +562,8 @@ void destroy() {
 		vector<Person> newData(originalSize);
 		int newLengthData = 0;
 
-		readInput(inputData, lengthInputData);
-		readData(data, lengthData);
+		readData(fileToDelete, inputData, lengthInputData);
+		readData(dataAddress, data, lengthData);
 
 		for (int i = 0; i < lengthData; i++) {
 			trigger = true;
@@ -336,26 +574,18 @@ void destroy() {
 			}
 			if (trigger) {
 				if (newLengthData == newData.size()) {
-					newData.resize(newLengthData + ceil(newLengthData / 2.0));
+					newData.resize(newLengthData * 2);
 				}
 				newData[newLengthData] = data[i];
 				newLengthData++;
 			}
 		}
 
-		writeData(newData, newLengthData, false);
+		writeData(dataAddress, newData, newLengthData, false);
 
 		cout << "Completed!" << endl << endl;
 	}
 	else {
 		cout << "The data was entered incorrectly." << endl << endl;
 	}
-}
-
-void clear() {
-	ofstream out;
-	out.open("data.txt", ios::trunc);
-	out.close();
-
-	cout << "Completed!" << endl << endl;
 }
