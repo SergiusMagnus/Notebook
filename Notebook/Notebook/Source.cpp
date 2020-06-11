@@ -11,13 +11,13 @@ private:
 	static const int number = 7;
 	string data[number];
 	/*
-	0 - имя(name)
-	1 - фамилия(surname)
-	2 - отчество(patronymic)
-	3 - номер телефона(phone number)
-	4 - адрес элестронной почты(e-male)
-	5 - дата рождения(date of birth)
-	6 - город проживания(city)*/
+	0 - РёРјСЏ(name)
+	1 - С„Р°РјРёР»РёСЏ(surname)
+	2 - РѕС‚С‡РµСЃС‚РІРѕ(patronymic)
+	3 - РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР°(phone number)
+	4 - Р°РґСЂРµСЃ СЌР»РµСЃС‚СЂРѕРЅРЅРѕР№ РїРѕС‡С‚С‹(e-male)
+	5 - РґР°С‚Р° СЂРѕР¶РґРµРЅРёСЏ(date of birth)
+	6 - РіРѕСЂРѕРґ РїСЂРѕР¶РёРІР°РЅРёСЏ(city)*/
 
 public:
 	Person() {
@@ -283,7 +283,7 @@ void sortData(vector<Person> &data, int lengthData, string flag) {
 	string String2;
 	Person tmp;
 
-	//if (index != 5) {
+	//if (index != 5) {}
 		for (int i = 0; i < lengthData; i++) {
 			for (int j = 1; j < lengthData; j++) {
 
@@ -297,7 +297,6 @@ void sortData(vector<Person> &data, int lengthData, string flag) {
 				}
 			}
 		}
-	//}
 }
 
 int getIndex(string flag) {
